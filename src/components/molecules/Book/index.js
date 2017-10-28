@@ -1,7 +1,6 @@
 import React from 'react'
 
 const Book = ({ data }) => {
-  console.log(data)
   const bookInfo = {
     title: data.title,
     cover: data.imageLinks.thumbnail || data.imageLinks.smallThumbnail,
@@ -15,7 +14,7 @@ const Book = ({ data }) => {
         <div className="book-top">
           <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url("${bookInfo.cover}")` }}></div>
           <div className="book-shelf-changer">
-            <select>
+            <select value={bookInfo.shelf}>
               <option value="none" disabled>Move to...</option>
               <option value="currentlyReading">Currently Reading</option>
               <option value="wantToRead">Want to Read</option>
@@ -23,6 +22,12 @@ const Book = ({ data }) => {
               <option value="none">None</option>
             </select>
           </div>
+        </div>
+        <div className="book-title">{bookInfo.title}</div>
+        <div className="book-authors">
+          {
+            bookInfo.authors.map((author,index) => index > 0 ? `, ${author}`: author)    
+          }
         </div>
       </div>
     </li>

@@ -42,7 +42,11 @@ class BookShelves extends Component {
 
   renderShelves = (shelves) => {
     if (shelves.length > 0) {
-      return shelves.map(shelf => <BookShelf key={shelf.title} data={shelf} />)
+      return shelves.map(shelf => {
+        const books = Object.values(shelf)[1]
+
+        return <BookShelf key={shelf.title} data={books} title={shelf.title} />
+      })
     }
   }
 
