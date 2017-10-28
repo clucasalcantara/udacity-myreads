@@ -26,7 +26,9 @@ const Book = ({ data }) => {
         <div className="book-title">{bookInfo.title}</div>
         <div className="book-authors">
           {
-            bookInfo.authors.map((author,index) => index > 0 ? `, ${author}`: author)    
+            bookInfo.authors.map(
+              (author,index) => index > 0 ? `, ${author}`: author
+            )    
           }
         </div>
       </div>
