@@ -8,7 +8,7 @@ import {
 import {
   BookShelves,
   Search,
-} from '../pages'
+} from '../pages/'
 
 const RootContainer = () => (
   <Router>

@@ -1,7 +1,7 @@
 import BookShelves from './BookShelves'
 import Search from './Search'
 
-export { 
+export {
   BookShelves,
   Search,
 }
