@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import BookShelf from '../../organisms/BookShelf'
 
-import { getAll } from '../../../services/BooksAPI'
+import { getAll, update } from '../../../services/BooksAPI'
 
 import './style.css'
 
@@ -40,12 +40,31 @@ class BookShelves extends Component {
     })
   }
 
+  handleChange = (e, book) => {
+    const { value } = e.target
+    update(book, value).then(res => {
+      const { updatedBooksIds } = res
+      this.updateBooks(value, book, res)
+    })
+  }
+
+  updateBooks = (value, book, res) => {
+    console.log(value, book, res)
+  }
+
   renderShelves = (shelves) => {
     if (shelves.length > 0) {
       return shelves.map(shelf => {
         const books = Object.values(shelf)[1]
 
-        return <BookShelf key={shelf.title} data={books} title={shelf.title} />
+        return (
+          <BookShelf
+            key={shelf.title}
+            handleChange={this.handleChange} 
+            data={books}
+            title={shelf.title}
+          />
+        )
       })
     }
   }
