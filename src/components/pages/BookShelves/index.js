@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import ReactLoading from 'react-loading'
 
 import BookShelf from '../../organisms/BookShelf'
 
@@ -10,6 +11,7 @@ import './style.css'
 class BookShelves extends Component {
   state = {
     shelves: [],
+    loading: true,
   }
   
   componentDidMount() {
@@ -36,61 +38,63 @@ class BookShelves extends Component {
           title: 'Read',
           read
         }
-      ]
+      ],
+      loading: false
     })
   }
 
   handleChange = (e, book) => {
     const { value } = e.target
     update(book, value).then(res => {
-      const { updatedBooksIds } = res
-      this.updateBooks(value, book, res)
+      this.getBooks()
     })
   }
 
-  updateBooks = (value, book, res) => {
-    console.log(value, book, res)
-  }
-
-  renderShelves = (shelves) => {
-    if (shelves.length > 0) {
-      return shelves.map(shelf => {
-        const books = Object.values(shelf)[1]
-
-        return (
-          <BookShelf
-            key={shelf.title}
-            handleChange={this.handleChange} 
-            data={books}
-            title={shelf.title}
-          />
-        )
-      })
-    }
-  }
-
-  drawContent = (shelves) => (
-    <div className="app">
-      <div className="list-books">
-        <div className="list-books-title">
-          <h1>MyReads</h1>
-        </div>
-        <div className="list-books-content">
-          <div>
-            {this.renderShelves(shelves)}
-          </div>
-        </div>
-        <div className="open-search">
-          <Link to="/search">Add a book</Link>
-        </div>
-      </div>
+  displayLoading = () => (
+    <div className="loading">
+      <ReactLoading
+        type='bubbles'
+        color='purple'
+        height={250}
+        width={100}
+      />
     </div>
   )
-  
-  render() {
-    const { shelves } = this.state
     
-    return shelves.length > 0 ? this.drawContent(shelves) : null
+  render() {
+    const { loading, shelves } = this.state
+    return (
+      <div className="app">
+        <div className="list-books">
+          <div className="list-books-title">
+            <h1>MyReads</h1>
+          </div>
+          <div className="list-books-content">
+            <div>
+              {loading && this.displayLoading()}
+              {
+                shelves.map(shelf => (
+                  <BookShelf
+                    key={shelf.title}
+                    handleChange={this.handleChange}
+                    data={Object.values(shelf)[1]}
+                    title={shelf.title}
+                  />
+                ))
+              }
+            </div>
+          </div>
+          <div className="open-search">
+            <Link to={{
+              pathname: '/search',
+              handleChange: this.handleChange
+            }}>
+              Add a book
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 }
 

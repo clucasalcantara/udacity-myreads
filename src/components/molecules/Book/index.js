@@ -1,11 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-const Book = ({ data, updateShelf }) => {
+const Book = ({ data = {}, updateShelf }) => {
   const bookInfo = {
     title: data.title,
     cover: data.imageLinks.thumbnail || data.imageLinks.smallThumbnail,
     shelf: data.shelf,
-    authors: data.authors,
+    authors: data.authors || [],
   }
 
   return (
@@ -27,13 +28,23 @@ const Book = ({ data, updateShelf }) => {
         <div className="book-authors">
           {
             bookInfo.authors.map(
-              (author,index) => index > 0 ? `, ${author}`: author
+              (author, index) => index > 0 ? `, ${author}`: author
             )    
           }
         </div>
       </div>
     </li>
   )
+}
+
+Book.propTypes = {
+  data: PropTypes.object.isRequired,
+  updateShelf: PropTypes.func.isRequired,
+}
+
+Book.defaultProps = {
+  data: {},
+  updateShelf: () => {},
 }
 
 export default Book

@@ -1,27 +1,109 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
+import ReactLoading from 'react-loading'
 
-const Search = () => (
-  <div className="search-books">
-    <div className="search-books-bar">
-      <Link className="close-search" to="/">Close</Link>
-      <div className="search-books-input-wrapper">
-        {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
+import BookShelf from '../../organisms/BookShelf'
+import { update, search } from '../../../services/BooksAPI'
 
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-        <input type="text" placeholder="Search by title or author" />
+class Search extends PureComponent {
+  state = {
+    query: '',
+    results: [],
+    isLoading: false,
+  }
 
+  handleTextChange = (e) => {
+    this.setState({ isLoading: true })
+    const query = e.target.value
+    if (query.length >= 3) {
+      search(query).then(res =>
+        this.setState({ 
+          results: res,
+          isLoading: false,
+        })
+      )
+    }
+  }
+
+  handleChange = (e, book) => {
+    const { value } = e.target
+    update(book, value).then(res => {
+      this.setState({ isLoading: false })
+      history.back()
+    })
+  }
+
+  displayEmpty = () => (
+    <div className="search-box-message">
+      <div style={{ color: 'purple', marginTop: '10em', textAlign: 'center' }}>
+        <h1 className="search-message">
+          Nothing to show, search is empty
+              </h1>
       </div>
     </div>
-    <div className="search-books-results">
-      <ol className="books-grid"></ol>
+  )
+
+  displayError = (results) => (
+    <div className="search-books">
+      <div className="search-books-bar">
+        <Link to="/" className="close-search">Close</Link>
+        <div className="search-books-input-wrapper">
+          <input
+            type="text"
+            onChange={e => this.handleTextChange(e)}
+            placeholder="Search by title or author"
+          />
+        </div>
+      </div>
+      <div style={{ color: 'purple', marginTop: '10em', textAlign: 'center' }}>
+        <h1 className="search-message">
+          Error on search: {`${results.error}`}
+        </h1>
+      </div>
     </div>
-  </div>
-)
+  )
+
+  displayLoading = () => (
+    <div className="loading">
+      <ReactLoading
+        type='bubbles'
+        color='purple'
+        height={250}
+        width={100}
+      />
+    </div>
+  )
+  
+  render() {
+    const { results , isLoading } = this.state    
+    if (results.hasOwnProperty('error') && !isLoading) this.displayError(results)
+
+    return (
+      <div className="search-books">
+        <div className="search-books-bar">
+          <Link to="/" className="close-search">Close</Link>
+          <div className="search-books-input-wrapper">
+            <input
+              type="text"
+              onChange={e => this.handleTextChange(e)}
+              placeholder="Search by title or author"
+            />
+          </div>
+        </div>
+        {isLoading && this.displayLoading()}
+        {
+          results.length > 0 && results.map((shelf, index) => (
+            <BookShelf
+              key={`shelf-${index}`}
+              handleChange={this.handleChange}
+              data={results}
+            />
+          ))
+        }
+        {(results.length === 0 && !isLoading) && this.displayEmpty()}
+      </div>
+    )
+  }
+}
 
 export default Search
