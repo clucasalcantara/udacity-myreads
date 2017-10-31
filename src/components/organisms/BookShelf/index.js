@@ -17,7 +17,7 @@ const BookShelf = ({ data = [], title = null, handleChange }) => {
 }
 
 BookShelf.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
   title: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
 }
