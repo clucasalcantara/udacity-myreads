@@ -11,10 +11,10 @@ import './style.css'
 class BookShelves extends Component {
   state = {
     shelves: [],
-    loading: true,
+    isLoading: true,
   }
   
-  componentDidMount() {
+  componentDidMount = () => {
     this.getBooks()
   }
 
@@ -25,6 +25,7 @@ class BookShelves extends Component {
     const read = shelves.filter(book => book.shelf === 'read')
 
     this.setState({ 
+      isLoading: false,
       shelves: [
         {
           title: 'Currently Reading',
@@ -38,12 +39,12 @@ class BookShelves extends Component {
           title: 'Read',
           read
         }
-      ],
-      loading: false
+      ]
     })
   }
 
   handleChange = (e, book) => {
+    this.setState({ isLoading: true })
     const { value } = e.target
     update(book, value).then(res => {
       this.getBooks()
@@ -55,45 +56,50 @@ class BookShelves extends Component {
       <ReactLoading
         type='bubbles'
         color='purple'
-        height={250}
-        width={100}
+        height={150}
+        width={50}
       />
     </div>
   )
     
   render() {
-    const { loading, shelves } = this.state
+    const { isLoading, shelves } = this.state
     return (
       <div className="app">
         <div className="list-books">
           <div className="list-books-title">
             <h1>MyReads</h1>
           </div>
-          <div className="list-books-content">
+          {isLoading && this.displayLoading()}
+          {!isLoading &&
             <div>
-              {loading && this.displayLoading()}
-              {
-                shelves.map(shelf => (
-                  <BookShelf
-                    key={shelf.title}
-                    handleChange={this.handleChange}
-                    data={Object.values(shelf)[1]}
-                    title={shelf.title}
-                  />
-                ))
-              }
+              <div className="list-books-content">
+                <div>
+                  {
+                    shelves.map(shelf => (
+                      <BookShelf
+                        key={shelf.title}
+                        handleChange={this.handleChange}
+                        data={Object.values(shelf)[1]}
+                        title={shelf.title}
+                      />
+                    ))
+                  }
+                </div>
+              </div>
+              <div className="open-search">
+                <Link to={{
+                  pathname: '/search',
+                  handleChange: this.handleChange
+                }}>
+                  Add a book
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="open-search">
-            <Link to={{
-              pathname: '/search',
-              handleChange: this.handleChange
-            }}>
-              Add a book
-            </Link>
-          </div>
+          }
         </div>
       </div>
+
     )
   }
 }
