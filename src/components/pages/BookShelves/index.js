@@ -90,7 +90,8 @@ class BookShelves extends Component {
               <div className="open-search">
                 <Link to={{
                   pathname: '/search',
-                  handleChange: this.handleChange
+                  handleChange: this.handleChange,
+                  state: shelves
                 }}>
                   Add a book
                 </Link>

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Loading, ErrorPage, Empty } from '../../atoms'
+import { Loading, ErrorPage, Empty, SearchBar } from '../../atoms'
 import BookShelf from '../../organisms/BookShelf'
 import { update, search } from '../../../services/BooksAPI'
 
@@ -14,11 +14,9 @@ class Search extends PureComponent {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { results } = this.state
-    
     return nextState.results !== results
   }
   
-
   handleTextChange = (e) => {
     this.setState({ isLoading: true })
     const query = e.target.value
@@ -45,10 +43,12 @@ class Search extends PureComponent {
     const { results , isLoading } = this.state
     let searchResult = results   
 
-    if (state.length && results.length) {
-      state.map(shelf => Object.values(shelf)[1].map(book => {
-        return searchResult.map( (searchedBook) => searchedBook.id === book.id ? Object.assign(searchedBook, book) : false)
-      }))
+    if (typeof state !== 'undefined') {
+      if (state.length && results.length) {
+        state.map(shelf => Object.values(shelf)[1].map(book => {
+          return searchResult.map((searchedBook) => searchedBook.id === book.id ? Object.assign(searchedBook, book) : false)
+        }))
+      }
     }
     
     if (results.hasOwnProperty('error') && !isLoading) return <ErrorPage results={results} handleTextChange={this.handleTextChange} />
@@ -57,13 +57,7 @@ class Search extends PureComponent {
       <div className="search-books">
         <div className="search-books-bar">
           <Link to="/" className="close-search">Close</Link>
-          <div className="search-books-input-wrapper">
-            <input
-              type="text"
-              onChange={e => this.handleTextChange(e)}
-              placeholder="Search by title or author"
-            />
-          </div>
+          <SearchBar handleTextChange={this.handleTextChange} />
         </div>
         {isLoading && <Loading />}
         {
